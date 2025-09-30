@@ -14,7 +14,7 @@ std::string createSimulationDirectory(
     std::error_code EC;
     std::filesystem::create_directories(SIM_DIR, EC); 
 
-    return SIM_DIR.string() + std::filesystem::path::preferred_separator;
+    return SIM_DIR.string() + std::string(1, std::filesystem::path::preferred_separator);
 }
 
 __host__ __forceinline__

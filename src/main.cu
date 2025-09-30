@@ -3,9 +3,9 @@
 #include "init.cuh"
 #include "lbm.cuh"
 #include "bcs.cuh"
-#include "../include/hostFunctions.cuh"
+#include "../helpers/hostFunctions.cuh"
 #if defined(D_FIELDS)
-#include "../include/derivedFields.cuh"
+#include "../helpers/derivedFields.cuh"
 #endif 
 
 int main(int argc, char* argv[]) {
@@ -21,9 +21,9 @@ int main(int argc, char* argv[]) {
     setDevice();
     
     constexpr dim3 block(32u, 2u, 2u); 
-    constexpr dim3 blockX(32u, 32u, 1u);
-    constexpr dim3 blockY(32u, 32u, 1u);
-    constexpr dim3 blockZ(32u, 32u, 1u);
+    constexpr dim3 blockX(16u, 16u, 1u);
+    constexpr dim3 blockY(16u, 16u, 1u);
+    constexpr dim3 blockZ(16u, 16u, 1u);
 
     constexpr dim3 grid(divUp(NX, block.x),
                         divUp(NY, block.y),
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 
         if (STEP % MACRO_SAVE == 0) {
 
-            copyAndSaveToBinary(lbm.rho, PLANE, SIM_DIR, SIM_ID, STEP, "rho");
+            //copyAndSaveToBinary(lbm.rho, PLANE, SIM_DIR, SIM_ID, STEP, "rho");
             copyAndSaveToBinary(lbm.phi, PLANE, SIM_DIR, SIM_ID, STEP, "phi");
             copyAndSaveToBinary(lbm.uz,  PLANE, SIM_DIR, SIM_ID, STEP, "uz");
             #if defined(D_FIELDS)

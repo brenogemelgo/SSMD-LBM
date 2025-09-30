@@ -46,8 +46,8 @@ void emitDirInflowZ(
 
     const idx_t nbrIdx = global3(x+dx, y+dy, z+dz);
 
-    float feq = computeEquilibria(d.rho[nbrIdx], 0.0f, 0.0f, U_OIL, DIR);
-    float fneqReg = computeNonEquilibria(
+    float feq = computeFeq(d.rho[nbrIdx], 0.0f, 0.0f, U_OIL, UU_OIL, DIR);
+    float fneqReg = computeNeq(
         d.pxx[nbrIdx], d.pyy[nbrIdx], d.pzz[nbrIdx],
         d.pxy[nbrIdx], d.pxz[nbrIdx], d.pyz[nbrIdx],
         d.ux[nbrIdx],  d.uy[nbrIdx],  d.uz[nbrIdx],
@@ -57,7 +57,7 @@ void emitDirInflowZ(
     d.f[DIR * PLANE + nbrIdx] = to_pop(feq + OMCO_ZMIN * fneqReg);
 
     if constexpr (DIR == GDIR) {
-        feq = computeTruncatedEquilibria(d.phi[idx3_in], 0.0f, 0.0f, U_OIL, DIR);
+        feq = computeGeq(d.phi[idx3_in], 0.0f, 0.0f, U_OIL, DIR);
         d.g[DIR * PLANE + nbrIdx] = feq;
     }
 }
@@ -91,8 +91,8 @@ void emitDirInflowY(
 
     const idx_t nbrIdx = global3(x+dx, y+dy, z+dz);
 
-    float feq = computeEquilibria(d.rho[nbrIdx], 0.0f, U_WATER, 0.0f, DIR);
-    float fneqReg = computeNonEquilibria(
+    float feq = computeFeq(d.rho[nbrIdx], 0.0f, U_WATER, 0.0f, UU_WATER, DIR);
+    float fneqReg = computeNeq(
         d.pxx[nbrIdx], d.pyy[nbrIdx], d.pzz[nbrIdx],
         d.pxy[nbrIdx], d.pxz[nbrIdx], d.pyz[nbrIdx],
         d.ux[nbrIdx],  d.uy[nbrIdx],  d.uz[nbrIdx],
@@ -102,7 +102,7 @@ void emitDirInflowY(
     d.f[DIR * PLANE + nbrIdx] = to_pop(feq + OMCO_YMIN * fneqReg);
 
     if constexpr (DIR == GDIR) {
-        feq = computeTruncatedEquilibria(d.phi[idx3_in], 0.0f, U_WATER, 0.0f, DIR);
+        feq = computeGeq(d.phi[idx3_in], 0.0f, U_WATER, 0.0f, DIR);
         d.g[DIR * PLANE + nbrIdx] = feq;
     }
 }
@@ -138,8 +138,10 @@ void emitDirOutflowZ(
 
     const idx_t nbrIdx = global3(x+dx, y+dy, z+dz);
 
-    float feq = computeEquilibria(d.rho[nbrIdx], ux, uy, uz, DIR);
-    float fneqReg = computeNonEquilibria(
+    const float uu = ux*ux + uy*uy + uz*uz;
+
+    float feq = computeFeq(d.rho[nbrIdx], ux, uy, uz, uu, DIR);
+    float fneqReg = computeNeq(
         d.pxx[nbrIdx], d.pyy[nbrIdx], d.pzz[nbrIdx],
         d.pxy[nbrIdx], d.pxz[nbrIdx], d.pyz[nbrIdx],
         d.ux[nbrIdx],  d.uy[nbrIdx],  d.uz[nbrIdx],
@@ -149,7 +151,7 @@ void emitDirOutflowZ(
     d.f[DIR * PLANE + nbrIdx] = to_pop(feq + OMCO_MAX * fneqReg);
 
     if constexpr (DIR == GDIR) {
-        feq = computeTruncatedEquilibria(d.phi[nbrIdx], ux, uy, uz, DIR);
+        feq = computeGeq(d.phi[nbrIdx], ux, uy, uz, DIR);
         d.g[DIR * PLANE + nbrIdx] = feq;
     }
 }
@@ -187,8 +189,10 @@ void emitDirOutflowY(
 
     const idx_t nbrIdx = global3(x+dx, y+dy, z+dz);
 
-    float feq = computeEquilibria(d.rho[nbrIdx], ux, uy, uz, DIR);
-    float fneqReg = computeNonEquilibria(
+    const float uu = ux*ux + uy*uy + uz*uz;
+
+    float feq = computeFeq(d.rho[nbrIdx], ux, uy, uz, uu, DIR);
+    float fneqReg = computeNeq(
         d.pxx[nbrIdx], d.pyy[nbrIdx], d.pzz[nbrIdx],
         d.pxy[nbrIdx], d.pxz[nbrIdx], d.pyz[nbrIdx],
         d.ux[nbrIdx],  d.uy[nbrIdx],  d.uz[nbrIdx],
@@ -198,7 +202,7 @@ void emitDirOutflowY(
     d.f[DIR * PLANE + nbrIdx] = to_pop(feq + OMCO_MAX * fneqReg);
 
     if constexpr (DIR == GDIR) {
-        feq = computeTruncatedEquilibria(d.phi[nbrIdx], ux, uy, uz, DIR);
+        feq = computeGeq(d.phi[nbrIdx], ux, uy, uz, DIR);
         d.g[DIR * PLANE + nbrIdx] = feq;
     }
 }

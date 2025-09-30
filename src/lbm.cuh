@@ -221,259 +221,8 @@ void forceStreamCollide(
     d.uy[idx3] = uy; 
     d.uz[idx3] = uz;
 
-    const float invRhoCssq = 3.0f * invRho;
-
-    #if defined(D3Q19)
-    float feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*ux + 4.5f*ux*ux);
-    #elif defined(D3Q27)
-    float feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*ux + 4.5f*ux*ux + 4.5f*ux*ux*ux - 3.0f*ux * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    float fneq = pop1 - feq;
-    float pxx = fneq;
-
-    #if defined(D3Q19)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*ux + 4.5f*ux*ux);
-    #elif defined(D3Q27)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*ux + 4.5f*ux*ux - 4.5f*ux*ux*ux + 3.0f*ux * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop2 - feq;
-    pxx += fneq;
-
-    #if defined(D3Q19)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*uy + 4.5f*uy*uy);
-    #elif defined(D3Q27)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*uy + 4.5f*uy*uy + 4.5f*uy*uy*uy - 3.0f*uy * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop3 - feq;
-    float pyy = fneq;
-
-    #if defined(D3Q19)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*uy + 4.5f*uy*uy);
-    #elif defined(D3Q27)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*uy + 4.5f*uy*uy - 4.5f*uy*uy*uy + 3.0f*uy * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop4 - feq;
-    pyy += fneq;
-
-    #if defined(D3Q19)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*uz + 4.5f*uz*uz);
-    #elif defined(D3Q27)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*uz + 4.5f*uz*uz + 4.5f*uz*uz*uz - 3.0f*uz * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop5 - feq;
-    float pzz = fneq;
-
-    #if defined(D3Q19)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*uz + 4.5f*uz*uz);
-    #elif defined(D3Q27)
-    feq = W_1 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*uz + 4.5f*uz*uz - 4.5f*uz*uz*uz + 3.0f*uz * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop6 - feq;
-    pzz += fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux + uy) + 4.5f*(ux + uy)*(ux + uy));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux + uy) + 4.5f*(ux + uy)*(ux + uy) + 4.5f*(ux + uy)*(ux + uy)*(ux + uy) - 3.0f*(ux + uy) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop7 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    float pxy = fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(ux + uy) + 4.5f*(ux + uy)*(ux + uy));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(ux + uy) + 4.5f*(ux + uy)*(ux + uy) - 4.5f*(ux + uy)*(ux + uy)*(ux + uy) + 3.0f*(ux + uy) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop8 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pxy += fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux + uz) + 4.5f*(ux + uz)*(ux + uz));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux + uz) + 4.5f*(ux + uz)*(ux + uz) + 4.5f*(ux + uz)*(ux + uz)*(ux + uz) - 3.0f*(ux + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop9 - feq;
-    pxx += fneq; 
-    pzz += fneq; 
-    float pxz = fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(ux + uz) + 4.5f*(ux + uz)*(ux + uz));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(ux + uz) + 4.5f*(ux + uz)*(ux + uz) - 4.5f*(ux + uz)*(ux + uz)*(ux + uz) + 3.0f*(ux + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop10 - feq;
-    pxx += fneq; 
-    pzz += fneq; 
-    pxz += fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy + uz) + 4.5f*(uy + uz)*(uy + uz));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy + uz) + 4.5f*(uy + uz)*(uy + uz) + 4.5f*(uy + uz)*(uy + uz)*(uy + uz) - 3.0f*(uy + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop11 - feq;
-    pyy += fneq;
-    pzz += fneq; 
-    float pyz = fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(uy + uz) + 4.5f*(uy + uz)*(uy + uz));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(uy + uz) + 4.5f*(uy + uz)*(uy + uz) - 4.5f*(uy + uz)*(uy + uz)*(uy + uz) + 3.0f*(uy + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop12 - feq;
-    pyy += fneq; 
-    pzz += fneq; 
-    pyz += fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux - uy) + 4.5f*(ux - uy)*(ux - uy));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux - uy) + 4.5f*(ux - uy)*(ux - uy) + 4.5f*(ux - uy)*(ux - uy)*(ux - uy) - 3.0f*(ux - uy) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop13 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pxy -= fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy - ux) + 4.5f*(uy - ux)*(uy - ux));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy - ux) + 4.5f*(uy - ux)*(uy - ux) + 4.5f*(uy - ux)*(uy - ux)*(uy - ux) - 3.0f*(uy - ux) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop14 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pxy -= fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux - uz) + 4.5f*(ux - uz)*(ux - uz));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux - uz) + 4.5f*(ux - uz)*(ux - uz) + 4.5f*(ux - uz)*(ux - uz)*(ux - uz) - 3.0f*(ux - uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop15 - feq;
-    pxx += fneq; 
-    pzz += fneq; 
-    pxz -= fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uz - ux) + 4.5f*(uz - ux)*(uz - ux));
-    fneq = pop16 - feq;
-    pxx += fneq + CSSQ; 
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uz - ux) + 4.5f*(uz - ux)*(uz - ux) + 4.5f*(uz - ux)*(uz - ux)*(uz - ux) - 3.0f*(uz - ux) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop16 - feq;
-    pxx += fneq; 
-    #endif
-    pzz += fneq; 
-    pxz -= fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy - uz) + 4.5f*(uy - uz)*(uy - uz));
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy - uz) + 4.5f*(uy - uz)*(uy - uz) + 4.5f*(uy - uz)*(uy - uz)*(uy - uz) - 3.0f*(uy - uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    #endif
-    fneq = pop17 - feq;
-    pyy += fneq; 
-    pzz += fneq; 
-    pyz -= fneq;
-
-    #if defined(D3Q19)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uz - uy) + 4.5f*(uz - uy)*(uz - uy));
-    fneq = pop18 - feq;
-    pyy += fneq + CSSQ; 
-    pzz += fneq + CSSQ;
-    #elif defined(D3Q27)
-    feq = W_2 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uz - uy) + 4.5f*(uz - uy)*(uz - uy) + 4.5f*(uz - uy)*(uz - uy)*(uz - uy) - 3.0f*(uz - uy) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop18 - feq;
-    pyy += fneq; 
-    pzz += fneq; 
-    #endif
-    pyz -= fneq;
-    
-    // THIRD ORDER TERMS
-    #if defined(D3Q27)
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux + uy + uz) + 4.5f*(ux + uy + uz)*(ux + uy + uz) + 4.5f*(ux + uy + uz)*(ux + uy + uz)*(ux + uy + uz) - 3.0f*(ux + uy + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop19 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy += fneq; 
-    pxz += fneq; 
-    pyz += fneq;
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) - 3.0f*(ux + uy + uz) + 4.5f*(ux + uy + uz)*(ux + uy + uz) - 4.5f*(ux + uy + uz)*(ux + uy + uz)*(ux + uy + uz) + 3.0f*(ux + uy + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop20 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy += fneq; 
-    pxz += fneq; 
-    pyz += fneq;
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux + uy - uz) + 4.5f*(ux + uy - uz)*(ux + uy - uz) + 4.5f*(ux + uy - uz)*(ux + uy - uz)*(ux + uy - uz) - 3.0f*(ux + uy - uz) * 1.5f*(ux*ux + uy*uy + uz*uz));    
-    fneq = pop21 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy += fneq; 
-    pxz -= fneq; 
-    pyz -= fneq;
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uz - uy - ux) + 4.5f*(uz - uy - ux)*(uz - uy - ux) + 4.5f*(uz - uy - ux)*(uz - uy - ux)*(uz - uy - ux) - 3.0f*(uz - uy - ux) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop22 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy += fneq; 
-    pxz -= fneq; 
-    pyz -= fneq; 
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux - uy + uz) + 4.5f*(ux - uy + uz)*(ux - uy + uz) + 4.5f*(ux - uy + uz)*(ux - uy + uz)*(ux - uy + uz) - 3.0f*(ux - uy + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop23 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy -= fneq; 
-    pxz += fneq; 
-    pyz -= fneq;
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy - ux - uz) + 4.5f*(uy - ux - uz)*(uy - ux - uz) + 4.5f*(uy - ux - uz)*(uy - ux - uz)*(uy - ux - uz) - 3.0f*(uy - ux - uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop24 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy -= fneq; 
-    pxz += fneq; 
-    pyz -= fneq;
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(uy - ux + uz) + 4.5f*(uy - ux + uz)*(uy - ux + uz) + 4.5f*(uy - ux + uz)*(uy - ux + uz)*(uy - ux + uz) - 3.0f*(uy - ux + uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop25 - feq;
-    pxx += fneq; 
-    pyy += fneq; 
-    pzz += fneq;
-    pxy -= fneq; 
-    pxz -= fneq; 
-    pyz += fneq;
-
-    feq = W_3 * rho * (1.0f - 1.5f*(ux*ux + uy*uy + uz*uz) + 3.0f*(ux - uy - uz) + 4.5f*(ux - uy - uz)*(ux - uy - uz) + 4.5f*(ux - uy - uz)*(ux - uy - uz)*(ux - uy - uz) - 3.0f*(ux - uy - uz) * 1.5f*(ux*ux + uy*uy + uz*uz));
-    fneq = pop26 - feq;
-    pxx += fneq + CSSQ; 
-    pyy += fneq + CSSQ; 
-    pzz += fneq + CSSQ;
-    pxy -= fneq; 
-    pxz -= fneq; 
-    pyz += fneq;
-    #endif 
-
-    //pxx += CSSQ;
-    //pyy += CSSQ;
-    //pzz += CSSQ;
+    #include "../include/momentumFluxAU.cuh" // Agressive Unrolling
+    //#include "../include/momentumFluxNT.cuh" // No Temps
 
     d.pxx[idx3] = pxx;
     d.pyy[idx3] = pyy;
@@ -482,178 +231,62 @@ void forceStreamCollide(
     d.pxz[idx3] = pxz;   
     d.pyz[idx3] = pyz;
 
-    const float phi = d.phi[idx3]; 
-    const float nuLocal = fmaf(phi, (VISC_OIL - VISC_WATER), VISC_WATER);
+    float omcoLocal;
+    #if defined(VISC_CONTRAST)
+    {
+        const float phi = d.phi[idx3]; 
+        const float nuLocal = fmaf(phi, (VISC_OIL - VISC_WATER), VISC_WATER);
+        const float omegaPhys = 1.0f / (0.5f + 3.0f * nuLocal);
 
-    const float omegaPhys = 1.0f / (0.5f + 3.0f * nuLocal);
-    const float omegaLocal = fminf(omegaPhys, omegaSponge(z));
+        omcoLocal = 1.0f - fminf(omegaPhys, cubicSponge(z));
+    }
+    #else
+    {
+        omcoLocal = 1.0f - cubicSponge(z);
+    }
+    #endif
 
-    const float omcoLocal = 1.0f - omegaLocal;
-    const float coeffForce = 1.0f - 0.5f * omegaLocal;
+    #include "../include/streamCollide.cuh" 
 
-    feq = computeEquilibria(rho,ux,uy,uz,0);
-    float forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,0);
-    float fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,0);
-    d.f[idx3] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+    { // ====================================== ADVECTION-DIFFUSION ====================================== //
+        #if !defined(VISC_CONTRAST)
+        const float phi = d.phi[idx3];
+        #endif
 
-    feq = computeEquilibria(rho,ux,uy,uz,1);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,1);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,1);
-    d.f[global4(x+1,y,z,1)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+        // Q0
+        d.g[idx3] = WG_0 * phi;
 
-    feq = computeEquilibria(rho,ux,uy,uz,2);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,2);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,2);
-    d.f[global4(x-1,y,z,2)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+        const float multPhi = WG_1 * phi;
+        const float phiNorm = GAMMA * multPhi * (1.0f - phi);
+        const float a4      = 4.0f * multPhi;
 
-    feq = computeEquilibria(rho,ux,uy,uz,3);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,3);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,3);
-    d.f[global4(x,y+1,z,3)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+        // -------------------------------- X+ (Q1)
+        float geq = multPhi + a4 * ux;
+        float hi = phiNorm * d.normx[idx3];
+        d.g[global4(x+1,y,z,1)] = geq + hi;
+        
+        // -------------------------------- X- (Q2)
+        geq = multPhi - a4 * ux;
+        d.g[global4(x-1,y,z,2)] = geq - hi;
 
-    feq = computeEquilibria(rho,ux,uy,uz,4);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,4);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,4);
-    d.f[global4(x,y-1,z,4)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+        // -------------------------------- Y+ (Q3)
+        geq = multPhi + a4 * uy;
+        hi = phiNorm * d.normy[idx3];
+        d.g[global4(x,y+1,z,3)] = geq + hi;
 
-    feq = computeEquilibria(rho,ux,uy,uz,5);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,5);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,5);
-    d.f[global4(x,y,z+1,5)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+        // -------------------------------- Y- (Q4)
+        geq = multPhi - a4 * uy;
+        d.g[global4(x,y-1,z,4)] = geq - hi;
 
-    feq = computeEquilibria(rho,ux,uy,uz,6);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,6);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,6);
-    d.f[global4(x,y,z-1,6)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
+        // -------------------------------- Z+ (Q5)
+        geq = multPhi + a4 * uz;
+        hi = phiNorm * d.normz[idx3];
+        d.g[global4(x,y,z+1,5)] = geq + hi;
 
-    feq = computeEquilibria(rho,ux,uy,uz,7);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,7);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,7);
-    d.f[global4(x+1,y+1,z,7)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,8);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,8);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,8);
-    d.f[global4(x-1,y-1,z,8)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,9);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,9);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,9);
-    d.f[global4(x+1,y,z+1,9)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,10);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,10);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,10);
-    d.f[global4(x-1,y,z-1,10)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,11);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,11);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,11);
-    d.f[global4(x,y+1,z+1,11)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,12);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,12);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,12);
-    d.f[global4(x,y-1,z-1,12)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,13);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,13);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,13);
-    d.f[global4(x+1,y-1,z,13)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,14);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,14);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,14);
-    d.f[global4(x-1,y+1,z,14)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,15);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,15);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,15);
-    d.f[global4(x+1,y,z-1,15)] = to_pop(feq + omcoLocal * fneqReg + forceCorr); 
-
-    feq = computeEquilibria(rho,ux,uy,uz,16);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,16);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,16);
-    d.f[global4(x-1,y,z+1,16)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,17);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,17);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,17);
-    d.f[global4(x,y+1,z-1,17)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,18);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,18);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,18);
-    d.f[global4(x,y-1,z+1,18)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    #if defined(D3Q27)
-    feq = computeEquilibria(rho,ux,uy,uz,19);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,19);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,19);
-    d.f[global4(x+1,y+1,z+1,19)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,20);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,20);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,20);
-    d.f[global4(x-1,y-1,z-1,20)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,21);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,21);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,21);
-    d.f[global4(x+1,y+1,z-1,21)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,22);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,22);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,22);
-    d.f[global4(x-1,y-1,z+1,22)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);    
-
-    feq = computeEquilibria(rho,ux,uy,uz,23);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,23);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,23);
-    d.f[global4(x+1,y-1,z+1,23)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,24);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,24);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,24);
-    d.f[global4(x-1,y+1,z-1,24)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-
-    feq = computeEquilibria(rho,ux,uy,uz,25);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,25);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,25);
-    d.f[global4(x-1,y+1,z+1,25)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);    
-    
-    feq = computeEquilibria(rho,ux,uy,uz,26);
-    forceCorr = computeForceTerm(coeffForce,feq,ux,uy,uz,ffx,ffy,ffz,invRhoCssq,26);
-    fneqReg = computeNonEquilibria(pxx,pyy,pzz,pxy,pxz,pyz,ux,uy,uz,26);
-    d.f[global4(x+1,y-1,z-1,26)] = to_pop(feq + omcoLocal * fneqReg + forceCorr);
-    #endif 
-
-    d.g[idx3] = W_G_1 * phi;
-
-    const float phiNorm = (W_G_2 * GAMMA) * phi * (1.0f - phi);
-    const float multPhi = W_G_2 * phi;
-    const float a3 = 3.0f * multPhi;
-
-    feq = multPhi + a3 * ux;
-    forceCorr = phiNorm * normX;
-    d.g[global4(x+1,y,z,1)] = multPhi + a3 * ux + forceCorr;
-    
-    feq = multPhi - a3 * ux;
-    d.g[global4(x-1,y,z,2)] = feq - forceCorr;
-
-    feq = multPhi + a3 * uy;
-    forceCorr = phiNorm * normY;
-    d.g[global4(x,y+1,z,3)] = feq + forceCorr;
-
-    feq = multPhi - a3 * uy;
-    d.g[global4(x,y-1,z,4)] = feq - forceCorr;
-
-    feq = multPhi + a3 * uz;
-    forceCorr = phiNorm * normZ;
-    d.g[global4(x,y,z+1,5)] = feq + forceCorr;
-
-    feq = multPhi - a3 * uz;
-    d.g[global4(x,y,z-1,6)] = feq - forceCorr;
+        // -------------------------------- Z- (Q6)
+        geq = multPhi - a4 * uz;
+        d.g[global4(x,y,z-1,6)] = geq - hi;
+    } // ============================================= END ============================================= //
 }
 
 

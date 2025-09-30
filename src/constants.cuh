@@ -1,6 +1,6 @@
 #pragma once
-#include "../include/cudaUtils.cuh"
-#include "../include/velocitySets.cuh"
+#include "../helpers/cudaUtils.cuh"
+#include "../helpers/velocitySets.cuh"
 
 //#define RUN_MODE
 #define SAMPLE_MODE
@@ -37,6 +37,9 @@ constexpr int   DIAM_OIL   = 20;
 
 constexpr float U_WATER    = 0.05f; 
 constexpr int   DIAM_WATER = 20;
+
+constexpr float UU_OIL    = U_OIL * U_OIL;
+constexpr float UU_WATER  = U_WATER * U_WATER;
 
 constexpr int REYNOLDS_WATER = 5000;
 constexpr int REYNOLDS_OIL   = 5000;     

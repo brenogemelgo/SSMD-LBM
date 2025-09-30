@@ -40,13 +40,15 @@ void setDistros(
 
     const idx_t idx3 = global3(x,y,z);
 
+    const float uu = d.ux[idx3]*d.ux[idx3] + d.uy[idx3]*d.uy[idx3] + d.uz[idx3]*d.uz[idx3];
+
     #pragma unroll FLINKS
     for (idx_t Q = 0; Q < FLINKS; ++Q) {
-        d.f[global4(x,y,z,Q)] = computeEquilibria(d.rho[idx3],d.ux[idx3],d.uy[idx3],d.uz[idx3],Q);
+        d.f[global4(x,y,z,Q)] = computeFeq(d.rho[idx3],d.ux[idx3],d.uy[idx3],d.uz[idx3],uu,Q);
     }
     #pragma unroll GLINKS
     for (idx_t Q = 0; Q < GLINKS; ++Q) {
-        d.g[global4(x+CIX[Q],y+CIY[Q],z+CIZ[Q],Q)] = computeTruncatedEquilibria(d.phi[idx3],d.ux[idx3],d.uy[idx3],d.uz[idx3],Q);
+        d.g[global4(x,y,z,Q)] = computeGeq(d.phi[idx3],d.ux[idx3],d.uy[idx3],d.uz[idx3],Q);
     }
 } 
 
