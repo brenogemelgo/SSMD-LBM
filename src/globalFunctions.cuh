@@ -24,17 +24,6 @@ idx_t global4(
 #include "../include/discontinued/functionBased/lbmFunctions.cuh"
 
 __device__ __forceinline__ 
-float cubicSponge(
-    const idx_t z
-) {
-    const float zn = static_cast<float>(z) * INV_NZ_M1;
-    const float s  = fminf(fmaxf((zn - Z_START) * INV_SPONGE, 0.0f), 1.0f);
-    const float s2 = s * s;
-    const float ramp = s2 * s;
-    return fmaf(ramp, OMEGA_DELTA, OMEGA_REF);
-}
-
-__device__ __forceinline__ 
 float smoothstep(
     float edge0, 
     float edge1, 

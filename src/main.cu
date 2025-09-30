@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
             applyWaterInflow<<<gridY, blockY, dynamic, queue>>>(lbm);
             applyOutflowZ<<<gridZ, blockZ, dynamic, queue>>>(lbm);
             applyOutflowY<<<gridY, blockY, dynamic, queue>>>(lbm);
-            //periodicX   <<<gridX, blockX, dynamic, queue>>>(lbm);
+            periodicX   <<<gridX, blockX, dynamic, queue>>>(lbm);
             //periodicY   <<<gridY, blockY, dynamic, queue>>>(lbm);
 
         // ================================================================================= //

@@ -9,7 +9,7 @@
 #if defined(RUN_MODE)
 
     constexpr int MACRO_SAVE = 100;
-    constexpr int NSTEPS = 50000;
+    constexpr int NSTEPS = 10000;
     
 #elif defined(SAMPLE_MODE)
 
@@ -32,18 +32,25 @@ constexpr float CENTER_X = (NX-1) * 0.5f;
 constexpr float CENTER_Y = (NY-1) * 0.5f;
 constexpr float CENTER_Z = (NZ-1) * 0.5f;
 
+// ================= INFLOW PARAMETERS ================== //
+
 constexpr float U_OIL      = 0.05f;
 constexpr int   DIAM_OIL   = 10;
 
 constexpr float U_WATER    = 0.05f; 
 constexpr int   DIAM_WATER = 10;
 
-constexpr float UU_OIL    = U_OIL * U_OIL;
-constexpr float UU_WATER  = U_WATER * U_WATER;
-
 constexpr int REYNOLDS_WATER = 5000;
 constexpr int REYNOLDS_OIL   = 5000;     
 constexpr int WEBER = 500;  
+
+constexpr float Y_POS = 0.5f * CENTER_Y; // y position of oil inflow
+constexpr float Z_POS = 0.8f * CENTER_Z; // z position of water inflow
+
+// ===================================================== //
+
+constexpr float UU_OIL    = U_OIL * U_OIL;
+constexpr float UU_WATER  = U_WATER * U_WATER;
 
 constexpr float VISC_OIL   = (U_OIL * DIAM_OIL) / REYNOLDS_OIL;     
 constexpr float VISC_WATER = (U_WATER * DIAM_WATER) / REYNOLDS_WATER; 
@@ -58,22 +65,8 @@ constexpr float SIGMA = (U_OIL * U_OIL * DIAM_OIL) / WEBER;
 constexpr float GAMMA = 0.9f; 
 constexpr float CSSQ  = 1.0f / 3.0f;  
 
-constexpr float K          = 50.0f;
-constexpr float P          = 3.0f;            
-constexpr int SPONGE_CELLS = static_cast<int>(NZ/12);      
-static_assert(SPONGE_CELLS > 0, "SPONGE_CELLS must be > 0");
-
-constexpr float SPONGE     = static_cast<float>(SPONGE_CELLS) / static_cast<float>(NZ-1);
-constexpr float Z_START    = static_cast<float>(NZ-1-SPONGE_CELLS) / static_cast<float>(NZ-1);
-constexpr float INV_NZ_M1  = 1.0f / static_cast<float>(NZ-1);
-constexpr float INV_SPONGE = 1.0f / SPONGE;
-
 constexpr float OMEGA_REF = OMEGA_WATER;
 constexpr float VISC_REF = VISC_WATER; 
-
-constexpr float OMEGA_MAX  = 1.0f / (0.5f + 3.0f * VISC_REF * (K + 1.0f));
-constexpr float OMCO_MAX   = 1.0f - OMEGA_MAX; 
-constexpr float OMEGA_DELTA = OMEGA_MAX - OMEGA_REF; 
 
 constexpr idx_t STRIDE = NX * NY;
 constexpr idx_t PLANE  = NX * NY * NZ;

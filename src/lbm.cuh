@@ -241,8 +241,9 @@ void forceStreamCollide(
         omcoLocal = 1.0f - fminf(omegaPhys, cubicSponge(z));
     }
     #else
-    {
-        omcoLocal = 1.0f - cubicSponge(z);
+    {   
+        // omcoLocal = 1.0f - cubicSponge(z);
+        omcoLocal = 1.0f - OMEGA_REF;
     }
     #endif
 

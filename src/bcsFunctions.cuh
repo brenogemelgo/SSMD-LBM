@@ -148,7 +148,7 @@ void emitDirOutflowZ(
         DIR
     );
 
-    d.f[DIR * PLANE + nbrIdx] = to_pop(feq + OMCO_MAX * fneqReg);
+    d.f[DIR * PLANE + nbrIdx] = to_pop(feq + (1.0f - OMEGA_REF) * fneqReg);
 
     if constexpr (DIR == GDIR) {
         feq = computeGeq(d.phi[nbrIdx], 0.0f, 0.0f, U_OIL, DIR);
@@ -199,7 +199,7 @@ void emitDirOutflowY(
         DIR
     );
 
-    d.f[DIR * PLANE + nbrIdx] = to_pop(feq + OMCO_MAX * fneqReg);
+    d.f[DIR * PLANE + nbrIdx] = to_pop(feq + (1.0f - OMEGA_REF) * fneqReg);
 
     if constexpr (DIR == GDIR) {
         feq = computeGeq(d.phi[nbrIdx], 0.0f, 0.0f, U_OIL, DIR);

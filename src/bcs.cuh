@@ -11,7 +11,7 @@ void applyOilInflow(
     if (x >= NX || y >= NY) return;
 
     const float dx = static_cast<float>(x) - CENTER_X;
-    const float dy = static_cast<float>(y) - CENTER_Y;
+    const float dy = static_cast<float>(y) - Y_POS;
     const float radialDist = sqrtf(dx*dx + dy*dy);
     const float radius = 0.5f * static_cast<float>(DIAM_OIL);
     if (radialDist > radius) return;
@@ -37,7 +37,7 @@ void applyWaterInflow(
     if (x >= NX || z >= NZ) return;
 
     const float dx = static_cast<float>(x) - CENTER_X;
-    const float dz = static_cast<float>(z) - CENTER_Z;
+    const float dz = static_cast<float>(z) - Z_POS;
     const float r2 = dx*dx + dz*dz;
     const float R = 0.5f * static_cast<float>(DIAM_WATER);
     if (r2 > R*R) return;
