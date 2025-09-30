@@ -220,7 +220,7 @@ void forceStreamCollide(
     d.ux[idx3] = ux; 
     d.uy[idx3] = uy; 
     d.uz[idx3] = uz;
-
+ 
     #include "../include/momentumFluxAU.cuh" // Agressive Unrolling
     //#include "../include/momentumFluxNT.cuh" // No Temps
 

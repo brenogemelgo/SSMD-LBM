@@ -85,7 +85,7 @@ void applyOutflowY(
     const idx_t y = NY-1;
     const idx_t z = threadIdx.y + blockIdx.y * blockDim.y;
 
-    if (x >= NX || z >= NZ) return;
+    if (x == 0 || x == NX-1 || z == 0 || z == NZ-1) return;
 
     const idx_t idx3_ym1 = global3(x,y-1,z);
     d.phi[global3(x,y,z)] = d.phi[idx3_ym1];

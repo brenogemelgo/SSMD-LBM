@@ -57,9 +57,6 @@ int main(int argc, char* argv[]) {
 
     const auto START_TIME = std::chrono::high_resolution_clock::now();
     for (int STEP = 0; STEP <= NSTEPS; ++STEP) {
-        #if !defined(BENCHMARK)
-        std::cout << "Step " << STEP << " of " << NSTEPS << " started...\n";
-        #endif
 
         // ======================== LATTICE BOLTZMANN RELATED ======================== //
 

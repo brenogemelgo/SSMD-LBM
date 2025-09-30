@@ -2,8 +2,8 @@
 #include "../helpers/cudaUtils.cuh"
 #include "../helpers/velocitySets.cuh"
 
-//#define RUN_MODE
-#define SAMPLE_MODE
+#define RUN_MODE
+//#define SAMPLE_MODE
 //#define DEBUG_MODE
 
 #if defined(RUN_MODE)
@@ -23,7 +23,7 @@
 
 #endif
 
-constexpr idx_t MESH = 128;
+constexpr idx_t MESH = 64;
 constexpr idx_t NX   = MESH;
 constexpr idx_t NY   = MESH*2;
 constexpr idx_t NZ   = MESH*2;
@@ -33,10 +33,10 @@ constexpr float CENTER_Y = (NY-1) * 0.5f;
 constexpr float CENTER_Z = (NZ-1) * 0.5f;
 
 constexpr float U_OIL      = 0.05f;
-constexpr int   DIAM_OIL   = 20;
+constexpr int   DIAM_OIL   = 10;
 
 constexpr float U_WATER    = 0.05f; 
-constexpr int   DIAM_WATER = 20;
+constexpr int   DIAM_WATER = 10;
 
 constexpr float UU_OIL    = U_OIL * U_OIL;
 constexpr float UU_WATER  = U_WATER * U_WATER;
@@ -55,7 +55,7 @@ constexpr float OMCO_YMIN = 1.0f - OMEGA_WATER;
 constexpr float OMCO_ZMIN = 1.0f - OMEGA_OIL;
 
 constexpr float SIGMA = (U_OIL * U_OIL * DIAM_OIL) / WEBER; 
-constexpr float GAMMA = 0.3f * 3.0f; 
+constexpr float GAMMA = 0.9f; 
 constexpr float CSSQ  = 1.0f / 3.0f;  
 
 constexpr float K          = 50.0f;
