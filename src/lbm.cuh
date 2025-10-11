@@ -164,34 +164,34 @@ void forceStreamCollide(
     const float ffy = stCurv * normY;
     const float ffz = stCurv * normZ;
         
-    const float pop0 = from_pop(d.f[idx3]);         
-    const float pop1 = from_pop(d.f[PLANE+idx3]);   
-    const float pop2 = from_pop(d.f[PLANE2+idx3]);  
-    const float pop3 = from_pop(d.f[PLANE3+idx3]);  
-    const float pop4 = from_pop(d.f[PLANE4+idx3]);  
-    const float pop5 = from_pop(d.f[PLANE5+idx3]);  
-    const float pop6 = from_pop(d.f[PLANE6+idx3]);  
-    const float pop7 = from_pop(d.f[PLANE7+idx3]);  
-    const float pop8 = from_pop(d.f[PLANE8+idx3]);  
-    const float pop9 = from_pop(d.f[PLANE9+idx3]);  
-    const float pop10 = from_pop(d.f[PLANE10+idx3]);
-    const float pop11 = from_pop(d.f[PLANE11+idx3]);
-    const float pop12 = from_pop(d.f[PLANE12+idx3]); 
-    const float pop13 = from_pop(d.f[PLANE13+idx3]); 
-    const float pop14 = from_pop(d.f[PLANE14+idx3]);
-    const float pop15 = from_pop(d.f[PLANE15+idx3]); 
-    const float pop16 = from_pop(d.f[PLANE16+idx3]); 
-    const float pop17 = from_pop(d.f[PLANE17+idx3]);
-    const float pop18 = from_pop(d.f[PLANE18+idx3]); 
+    const float pop0 = fromPop(d.f[idx3]);         
+    const float pop1 = fromPop(d.f[PLANE+idx3]);   
+    const float pop2 = fromPop(d.f[PLANE2+idx3]);  
+    const float pop3 = fromPop(d.f[PLANE3+idx3]);  
+    const float pop4 = fromPop(d.f[PLANE4+idx3]);  
+    const float pop5 = fromPop(d.f[PLANE5+idx3]);  
+    const float pop6 = fromPop(d.f[PLANE6+idx3]);  
+    const float pop7 = fromPop(d.f[PLANE7+idx3]);  
+    const float pop8 = fromPop(d.f[PLANE8+idx3]);  
+    const float pop9 = fromPop(d.f[PLANE9+idx3]);  
+    const float pop10 = fromPop(d.f[PLANE10+idx3]);
+    const float pop11 = fromPop(d.f[PLANE11+idx3]);
+    const float pop12 = fromPop(d.f[PLANE12+idx3]); 
+    const float pop13 = fromPop(d.f[PLANE13+idx3]); 
+    const float pop14 = fromPop(d.f[PLANE14+idx3]);
+    const float pop15 = fromPop(d.f[PLANE15+idx3]); 
+    const float pop16 = fromPop(d.f[PLANE16+idx3]); 
+    const float pop17 = fromPop(d.f[PLANE17+idx3]);
+    const float pop18 = fromPop(d.f[PLANE18+idx3]); 
     #if defined(D3Q27)
-    const float pop19 = from_pop(d.f[PLANE19+idx3]); 
-    const float pop20 = from_pop(d.f[PLANE20+idx3]); 
-    const float pop21 = from_pop(d.f[PLANE21+idx3]); 
-    const float pop22 = from_pop(d.f[PLANE22+idx3]); 
-    const float pop23 = from_pop(d.f[PLANE23+idx3]); 
-    const float pop24 = from_pop(d.f[PLANE24+idx3]);
-    const float pop25 = from_pop(d.f[PLANE25+idx3]);
-    const float pop26 = from_pop(d.f[PLANE26+idx3]); 
+    const float pop19 = fromPop(d.f[PLANE19+idx3]); 
+    const float pop20 = fromPop(d.f[PLANE20+idx3]); 
+    const float pop21 = fromPop(d.f[PLANE21+idx3]); 
+    const float pop22 = fromPop(d.f[PLANE22+idx3]); 
+    const float pop23 = fromPop(d.f[PLANE23+idx3]); 
+    const float pop24 = fromPop(d.f[PLANE24+idx3]);
+    const float pop25 = fromPop(d.f[PLANE25+idx3]);
+    const float pop26 = fromPop(d.f[PLANE26+idx3]); 
     #endif 
 
     float rho = pop0 + pop1 + pop2 + pop3 + pop4 + pop5 + pop6 + pop7 + pop8 + pop9 + pop10 + pop11 + pop12 + pop13 + pop14 + pop15 + pop16 + pop17 + pop18;
@@ -221,9 +221,9 @@ void forceStreamCollide(
     d.uy[idx3] = uy; 
     d.uz[idx3] = uz;
  
-    #include "../include/momentumFluxAU.cuh" // Agressive Unrolling
-    //#include "../include/momentumFluxNT.cuh" // No Temps
-
+    float pxx = 0.0f, pyy = 0.0f, pzz = 0.0f;
+    float pxy = 0.0f, pxz = 0.0f, pyz = 0.0f;
+    #include "../include/momentumFlux19.cuh" 
     d.pxx[idx3] = pxx;
     d.pyy[idx3] = pyy;
     d.pzz[idx3] = pzz;
@@ -247,7 +247,7 @@ void forceStreamCollide(
     }
     #endif
 
-    #include "../include/streamCollide.cuh" 
+    #include "../include/streamCollide19.cuh" 
 
     { // ====================================== ADVECTION-DIFFUSION ====================================== //
         #if !defined(VISC_CONTRAST)

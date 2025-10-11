@@ -106,29 +106,44 @@ __global__
 void periodicX(
     LBMFields d
 ) {
-    const idx_t y = threadIdx.x + blockIdx.x * blockDim.x;              
+    const idx_t y = threadIdx.x + blockIdx.x * blockDim.x;
     const idx_t z = threadIdx.y + blockIdx.y * blockDim.y;
-    
+
     if (y <= 0 || y >= NY-1 || z <= 0 || z >= NZ-1) return;
 
     const idx_t bL = global3(1,y,z);
     const idx_t bR = global3(NX-2,y,z);
 
     // positive x contributions
-    copyDirs<pop_t,1,7,9,13,15>(d.f,bL,bR);   
+    d.f[     PLANE + bL] = d.f[     PLANE + bR];
+    d.f[7  * PLANE + bL] = d.f[7  * PLANE + bR];
+    d.f[9  * PLANE + bL] = d.f[9  * PLANE + bR];
+    d.f[13 * PLANE + bL] = d.f[13 * PLANE + bR];
+    d.f[15 * PLANE + bL] = d.f[15 * PLANE + bR];
     #if defined(D3Q27)
-    copyDirs<pop_t,19,21,23,26>(d.f,bL,bR);
-    #endif 
+    d.f[19 * PLANE + bL] = d.f[19 * PLANE + bR];
+    d.f[21 * PLANE + bL] = d.f[21 * PLANE + bR];
+    d.f[23 * PLANE + bL] = d.f[23 * PLANE + bR];
+    d.f[26 * PLANE + bL] = d.f[26 * PLANE + bR];
+    #endif
+    d.g[     PLANE + bL] = d.g[     PLANE + bR];
 
     // negative x contributions
-    copyDirs<pop_t,2,8,10,14,16>(d.f,bR,bL); 
+    d.f[2  * PLANE + bR] = d.f[2  * PLANE + bL];
+    d.f[8  * PLANE + bR] = d.f[8  * PLANE + bL];
+    d.f[10 * PLANE + bR] = d.f[10 * PLANE + bL];
+    d.f[14 * PLANE + bR] = d.f[14 * PLANE + bL];
+    d.f[16 * PLANE + bR] = d.f[16 * PLANE + bL];
     #if defined(D3Q27)
-    copyDirs<pop_t,20,22,24,25>(d.f,bR,bL);
-    #endif 
+    d.f[20 * PLANE + bR] = d.f[20 * PLANE + bL];
+    d.f[22 * PLANE + bR] = d.f[22 * PLANE + bL];
+    d.f[24 * PLANE + bR] = d.f[24 * PLANE + bL];
+    d.f[25 * PLANE + bR] = d.f[25 * PLANE + bL];
+    #endif
+    d.g[2  * PLANE + bR] = d.g[2  * PLANE + bL];
 
-    d.g[PLANE+bL] = d.g[PLANE+bR];
-    d.g[PLANE2+bR] = d.g[PLANE2+bL];
-    d.phi[global3(0,y,z)] = d.phi[bR];
+    // ghost cells
+    d.phi[global3(0,y,z)]    = d.phi[bR];
     d.phi[global3(NX-1,y,z)] = d.phi[bL];
 }
 
@@ -138,28 +153,43 @@ void periodicY(
 ) {
     const idx_t x = threadIdx.x + blockIdx.x * blockDim.x;
     const idx_t z = threadIdx.y + blockIdx.y * blockDim.y;
-    
+
     if (x <= 0 || x >= NX-1 || z <= 0 || z >= NZ-1) return;
 
     const idx_t bB = global3(x,1,z);
     const idx_t bT = global3(x,NY-2,z);
 
-    d.g[PLANE3+bB] = d.g[PLANE3+bT];
-    d.g[PLANE4+bT] = d.g[PLANE4+bB];
-    d.phi[global3(x,0,z)] = d.phi[bT];
-    d.phi[global3(x,NY-1,z)] = d.phi[bB];
-
     // positive y contributions
-    copyDirs<pop_t,3,7,11,14,17>(d.f,bB,bT);
+    d.f[3  * PLANE + bB] = d.f[3  * PLANE + bT];
+    d.f[7  * PLANE + bB] = d.f[7  * PLANE + bT];
+    d.f[11 * PLANE + bB] = d.f[11 * PLANE + bT];
+    d.f[14 * PLANE + bB] = d.f[14 * PLANE + bT];
+    d.f[17 * PLANE + bB] = d.f[17 * PLANE + bT];
     #if defined(D3Q27)
-    copyDirs<pop_t,19,21,24,25>(d.f,bB,bT);
-    #endif 
+    d.f[19 * PLANE + bB] = d.f[19 * PLANE + bT];
+    d.f[21 * PLANE + bB] = d.f[21 * PLANE + bT];
+    d.f[24 * PLANE + bB] = d.f[24 * PLANE + bT];
+    d.f[25 * PLANE + bB] = d.f[25 * PLANE + bT];
+    #endif
+    d.g[3  * PLANE + bB] = d.g[3  * PLANE + bT];
 
     // negative y contributions
-    copyDirs<pop_t,4,8,12,13,18>(d.f,bT,bB);
+    d.f[4  * PLANE + bT] = d.f[4  * PLANE + bB];
+    d.f[8  * PLANE + bT] = d.f[8  * PLANE + bB];
+    d.f[12 * PLANE + bT] = d.f[12 * PLANE + bB];
+    d.f[13 * PLANE + bT] = d.f[13 * PLANE + bB];
+    d.f[18 * PLANE + bT] = d.f[18 * PLANE + bB];
     #if defined(D3Q27)
-    copyDirs<pop_t,20,22,23,26>(d.f,bT,bB);
-    #endif 
+    d.f[20 * PLANE + bT] = d.f[20 * PLANE + bB];
+    d.f[22 * PLANE + bT] = d.f[22 * PLANE + bB];
+    d.f[23 * PLANE + bT] = d.f[23 * PLANE + bB];
+    d.f[26 * PLANE + bT] = d.f[26 * PLANE + bB];
+    #endif
+    d.g[4   * PLANE + bT] = d.g[4   * PLANE + bB];
 
+    // ghost cells
+    d.phi[global3(x,0,z)]    = d.phi[bT];
+    d.phi[global3(x,NY-1,z)] = d.phi[bB];
 }
+
 

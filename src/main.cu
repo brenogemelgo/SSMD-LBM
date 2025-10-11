@@ -1,12 +1,9 @@
-#include "globalFunctions.cuh"
+#include "deviceFunctions.cuh"
 #include "bcsFunctions.cuh"
 #include "init.cuh"
 #include "lbm.cuh"
 #include "bcs.cuh"
 #include "../helpers/hostFunctions.cuh"
-#if defined(D_FIELDS)
-#include "../helpers/derivedFields.cuh"
-#endif 
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
@@ -17,8 +14,10 @@ int main(int argc, char* argv[]) {
     const std::string SIM_ID       = argv[2];
     const std::string SIM_DIR = createSimulationDirectory(VELOCITY_SET, SIM_ID);
 
+    if (setDeviceFromEnv() < 0) return 1;
     //#define BENCHMARK
-    setDevice();
+    
+    setDeviceFields();
     
     constexpr dim3 block(32u, 2u, 2u); 
     constexpr dim3 blockX(16u, 16u, 1u);
@@ -48,10 +47,10 @@ int main(int argc, char* argv[]) {
 
     // =========================== INITIALIZATION =========================== //
 
-        setFields<<<grid, block, dynamic, queue>>>(lbm);
-        setOilJet<<<grid, block, dynamic, queue>>>(lbm);
-        setWaterJet<<<grid, block, dynamic, queue>>>(lbm);
-        setDistros<<<grid, block, dynamic, queue>>>(lbm);
+        setFields<<<grid, block, dynamic, queue>>>(fields);
+        setOilJet<<<grid, block, dynamic, queue>>>(fields);
+        setWaterJet<<<grid, block, dynamic, queue>>>(fields);
+        setDistros<<<grid, block, dynamic, queue>>>(fields);
     
     // ===================================================================== //
 
@@ -60,26 +59,22 @@ int main(int argc, char* argv[]) {
 
         // ======================== LATTICE BOLTZMANN RELATED ======================== //
 
-            computePhase<<<grid, block, dynamic, queue>>>(lbm);
-            forceStreamCollide<<<grid, block, dynamic, queue>>>(lbm);
+            computePhase<<<grid, block, dynamic, queue>>>(fields);
+            forceStreamCollide<<<grid, block, dynamic, queue>>>(fields);
 
         // ========================================================================== //
 
 
         // ============================== BOUNDARY CONDITIONS ============================== //
         
-            applyOilInflow<<<gridZ, blockZ, dynamic, queue>>>(lbm);
-            applyWaterInflow<<<gridY, blockY, dynamic, queue>>>(lbm);
-            applyOutflowZ<<<gridZ, blockZ, dynamic, queue>>>(lbm);
-            applyOutflowY<<<gridY, blockY, dynamic, queue>>>(lbm);
-            periodicX   <<<gridX, blockX, dynamic, queue>>>(lbm);
-            //periodicY   <<<gridY, blockY, dynamic, queue>>>(lbm);
+            applyOilInflow<<<gridZ, blockZ, dynamic, queue>>>(fields);
+            applyWaterInflow<<<gridY, blockY, dynamic, queue>>>(fields);
+            applyOutflowZ<<<gridZ, blockZ, dynamic, queue>>>(fields);
+            applyOutflowY<<<gridY, blockY, dynamic, queue>>>(fields);
+            periodicX   <<<gridX, blockX, dynamic, queue>>>(fields);
+            //periodicY   <<<gridY, blockY, dynamic, queue>>>(fields);
 
         // ================================================================================= //
-
-        #if defined(D_FIELDS)
-        computeDerived<<<grid, block, dynamic, queue>>>(lbm, dfields);
-        #endif 
 
         #if !defined(BENCHMARK)
 
@@ -87,13 +82,9 @@ int main(int argc, char* argv[]) {
 
         if (STEP % MACRO_SAVE == 0) {
 
-            //copyAndSaveToBinary(lbm.rho, PLANE, SIM_DIR, SIM_ID, STEP, "rho");
-            copyAndSaveToBinary(lbm.phi, PLANE, SIM_DIR, SIM_ID, STEP, "phi");
-            copyAndSaveToBinary(lbm.uz,  PLANE, SIM_DIR, SIM_ID, STEP, "uz");
-            #if defined(D_FIELDS)
-            copyAndSaveToBinary(dfields.vorticity_mag, PLANE, SIM_DIR, SIM_ID, STEP, "vorticity_mag");
-            copyAndSaveToBinary(dfields.velocity_mag,  PLANE, SIM_DIR, SIM_ID, STEP, "velocity_mag");
-            #endif 
+            //copyAndSaveToBinary(fields.rho, PLANE, SIM_DIR, SIM_ID, STEP, "rho");
+            copyAndSaveToBinary(fields.phi, PLANE, SIM_DIR, SIM_ID, STEP, "phi");
+            copyAndSaveToBinary(fields.uz,  PLANE, SIM_DIR, SIM_ID, STEP, "uz");
             std::cout << "Step " << STEP << ": bins in " << SIM_DIR << "\n";
 
         }
@@ -104,22 +95,22 @@ int main(int argc, char* argv[]) {
     const auto END_TIME = std::chrono::high_resolution_clock::now();
     checkCudaErrorsOutline(cudaStreamDestroy(queue));
 
-    cudaFree(lbm.f);
-    cudaFree(lbm.g);
-    cudaFree(lbm.phi);
-    cudaFree(lbm.rho);
-    cudaFree(lbm.normx);
-    cudaFree(lbm.normy);
-    cudaFree(lbm.normz);
-    cudaFree(lbm.ux);
-    cudaFree(lbm.uy);
-    cudaFree(lbm.uz);
-    cudaFree(lbm.pxx);
-    cudaFree(lbm.pyy);
-    cudaFree(lbm.pzz);
-    cudaFree(lbm.pxy);
-    cudaFree(lbm.pxz);
-    cudaFree(lbm.pyz);
+    cudaFree(fields.f);
+    cudaFree(fields.g);
+    cudaFree(fields.phi);
+    cudaFree(fields.rho);
+    cudaFree(fields.normx);
+    cudaFree(fields.normy);
+    cudaFree(fields.normz);
+    cudaFree(fields.ux);
+    cudaFree(fields.uy);
+    cudaFree(fields.uz);
+    cudaFree(fields.pxx);
+    cudaFree(fields.pyy);
+    cudaFree(fields.pzz);
+    cudaFree(fields.pxy);
+    cudaFree(fields.pxz);
+    cudaFree(fields.pyz);
 
     #if defined(D_FIELDS)
     cudaFree(dfields.vorticity_mag);
