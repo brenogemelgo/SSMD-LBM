@@ -8,22 +8,22 @@
 
 #if defined(RUN_MODE)
 
-    constexpr int MACRO_SAVE = 100;
-    constexpr int NSTEPS = 10000;
+constexpr int MACRO_SAVE = 1000;
+constexpr int NSTEPS = 100000;
     
 #elif defined(SAMPLE_MODE)
 
-    constexpr int MACRO_SAVE = 100;
-    constexpr int NSTEPS = 1000;
+constexpr int MACRO_SAVE = 100;
+constexpr int NSTEPS = 1000;
 
 #elif defined(DEBUG_MODE)
 
-    constexpr int MACRO_SAVE = 1;
-    constexpr int NSTEPS = 0;
+constexpr int MACRO_SAVE = 1;
+constexpr int NSTEPS = 0;
 
 #endif
 
-constexpr idx_t MESH = 64;
+constexpr idx_t MESH = 128;
 constexpr idx_t NX   = MESH;
 constexpr idx_t NY   = MESH*2;
 constexpr idx_t NZ   = MESH*2;
@@ -34,14 +34,15 @@ constexpr float CENTER_Z = (NZ-1) * 0.5f;
 
 // ================= INFLOW PARAMETERS ================== //
 
-constexpr float U_OIL      = 0.05f;
-constexpr int   DIAM_OIL   = 10;
+constexpr float U_WATER    = 0.06f; 
+constexpr int   DIAM_WATER = 13;
 
-constexpr float U_WATER    = 0.05f; 
-constexpr int   DIAM_WATER = 10;
+constexpr float U_OIL    = 0.05f;
+constexpr int   DIAM_OIL = 13;
 
-constexpr int REYNOLDS_WATER = 5000;
-constexpr int REYNOLDS_OIL   = 5000;     
+constexpr int REYNOLDS_WATER = 1400;
+constexpr int REYNOLDS_OIL   = 450;     
+
 constexpr int WEBER = 500;  
 
 constexpr float Y_POS = 0.5f * CENTER_Y; // y position of oil inflow
