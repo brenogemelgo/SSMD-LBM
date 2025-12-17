@@ -1,103 +1,114 @@
-#pragma once
-#include "../helpers/cudaUtils.cuh"
-#include "../helpers/velocitySets.cuh"
+/*---------------------------------------------------------------------------*\
+|                                                                             |
+| MULTIC-TS-LBM: CUDA-based multicomponent Lattice Boltzmann Method           |
+| Developed at UDESC - State University of Santa Catarina                     |
+| Website: https://www.udesc.br                                               |
+| Github: https://github.com/brenogemelgo/MULTIC-TS-LBM                       |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+
+Copyright (C) 2023 UDESC Geoenergia Lab
+Authors: Breno Gemelgo (Geoenergia Lab, UDESC)
+
+License
+    This file is part of MULTIC-TS-LBM.
+
+    MULTIC-TS-LBM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Description
+    A header defining the constants used in the simulation
+
+    Namespace
+
+SourceFiles
+    constants.cuh
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef CONSTANTS_CUH
+#define CONSTANTS_CUH
+
+#include "cuda/utils.cuh"
+#include "structs/LBMFields.cuh"
+#include "functions/constexprFor.cuh"
+#include "velocitySet/velocitySet.cuh"
+#include "flowCase/flowCase.cuh"
+
+namespace LBM
+{
+#if defined(VS_D3Q19)
+    using VelocitySet = D3Q19;
+#elif defined(VS_D3Q27)
+    using VelocitySet = D3Q27;
+#endif
+}
+
+namespace Phase
+{
+    using VelocitySet = LBM::D3Q7;
+}
 
 #define RUN_MODE
-//#define SAMPLE_MODE
-//#define DEBUG_MODE
+// #define SAMPLE_MODE
+// #define PROFILE_MODE
 
 #if defined(RUN_MODE)
 
-constexpr int MACRO_SAVE = 1000;
-constexpr int NSTEPS = 100000;
-    
+static constexpr int MACRO_SAVE = 1000;
+static constexpr int NSTEPS = 300000;
+
 #elif defined(SAMPLE_MODE)
 
-constexpr int MACRO_SAVE = 100;
-constexpr int NSTEPS = 1000;
+static constexpr int MACRO_SAVE = 100;
+static constexpr int NSTEPS = 10000;
 
-#elif defined(DEBUG_MODE)
+#elif defined(PROFILE_MODE)
 
-constexpr int MACRO_SAVE = 1;
-constexpr int NSTEPS = 0;
+static constexpr int MACRO_SAVE = 1;
+static constexpr int NSTEPS = 0;
 
 #endif
 
-constexpr idx_t MESH = 128;
-constexpr idx_t NX   = MESH;
-constexpr idx_t NY   = MESH*2;
-constexpr idx_t NZ   = MESH*2;
+namespace mesh
+{
+    static constexpr label_t res = 128;
+    static constexpr label_t nx = res;
+    static constexpr label_t ny = res * 2;
+    static constexpr label_t nz = res * 2;
 
-constexpr float CENTER_X = (NX-1) * 0.5f;
-constexpr float CENTER_Y = (NY-1) * 0.5f;
-constexpr float CENTER_Z = (NZ-1) * 0.5f;
+    static constexpr int diam_water = 13;
+    static constexpr int diam_oil = 13;
 
-// ================= INFLOW PARAMETERS ================== //
+    static constexpr int radius_water = diam_water / 2;
+    static constexpr int radius_oil = diam_oil / 2;
+}
 
-constexpr float U_WATER    = 0.06f; 
-constexpr int   DIAM_WATER = 13;
+namespace physics
+{
+    static constexpr scalar_t u_water = static_cast<scalar_t>(0.06);
+    static constexpr scalar_t u_oil = static_cast<scalar_t>(0.05);
 
-constexpr float U_OIL    = 0.05f;
-constexpr int   DIAM_OIL = 13;
+    static constexpr int reynolds_water = 1400;
+    static constexpr int reynolds_oil = 450;
 
-constexpr int REYNOLDS_WATER = 1400;
-constexpr int REYNOLDS_OIL   = 450;     
+    static constexpr int weber = 500;
+    static constexpr scalar_t sigma = (u_ref * u_ref * mesh::diam) / weber;
 
-constexpr int WEBER = 500;  
+    static constexpr scalar_t width = static_cast<scalar_t>(1);
+    static constexpr scalar_t gamma = static_cast<scalar_t>(static_cast<double>(1) / static_cast<double>(width));
+}
 
-constexpr float Y_POS = 0.5f * CENTER_Y; // y position of oil inflow
-constexpr float Z_POS = 0.8f * CENTER_Z; // z position of water inflow
-
-// ===================================================== //
-
-constexpr float UU_OIL    = U_OIL * U_OIL;
-constexpr float UU_WATER  = U_WATER * U_WATER;
-
-constexpr float VISC_OIL   = (U_OIL * DIAM_OIL) / REYNOLDS_OIL;     
-constexpr float VISC_WATER = (U_WATER * DIAM_WATER) / REYNOLDS_WATER; 
-
-constexpr float OMEGA_OIL   = 1.0f / (0.5f + 3.0f * VISC_OIL);
-constexpr float OMEGA_WATER = 1.0f / (0.5f + 3.0f * VISC_WATER);
-
-constexpr float OMCO_YMIN = 1.0f - OMEGA_WATER;
-constexpr float OMCO_ZMIN = 1.0f - OMEGA_OIL;
-
-constexpr float SIGMA = (U_OIL * U_OIL * DIAM_OIL) / WEBER; 
-constexpr float GAMMA = 0.9f; 
-constexpr float CSSQ  = 1.0f / 3.0f;  
-
-constexpr float OMEGA_REF = OMEGA_WATER;
-constexpr float VISC_REF = VISC_WATER; 
-
-constexpr idx_t STRIDE = NX * NY;
-constexpr idx_t PLANE  = NX * NY * NZ;
-
-constexpr idx_t PLANE2  = 2 * PLANE;
-constexpr idx_t PLANE3  = 3 * PLANE;
-constexpr idx_t PLANE4  = 4 * PLANE;
-constexpr idx_t PLANE5  = 5 * PLANE;
-constexpr idx_t PLANE6  = 6 * PLANE;
-constexpr idx_t PLANE7  = 7 * PLANE;
-constexpr idx_t PLANE8  = 8 * PLANE;
-constexpr idx_t PLANE9  = 9 * PLANE;
-constexpr idx_t PLANE10 = 10 * PLANE;
-constexpr idx_t PLANE11 = 11 * PLANE;
-constexpr idx_t PLANE12 = 12 * PLANE;   
-constexpr idx_t PLANE13 = 13 * PLANE;
-constexpr idx_t PLANE14 = 14 * PLANE;
-constexpr idx_t PLANE15 = 15 * PLANE;
-constexpr idx_t PLANE16 = 16 * PLANE;
-constexpr idx_t PLANE17 = 17 * PLANE;
-constexpr idx_t PLANE18 = 18 * PLANE;
-#if defined(D3Q27)
-constexpr idx_t PLANE19 = 19 * PLANE;
-constexpr idx_t PLANE20 = 20 * PLANE;
-constexpr idx_t PLANE21 = 21 * PLANE;
-constexpr idx_t PLANE22 = 22 * PLANE;
-constexpr idx_t PLANE23 = 23 * PLANE;
-constexpr idx_t PLANE24 = 24 * PLANE;
-constexpr idx_t PLANE25 = 25 * PLANE;
-constexpr idx_t PLANE26 = 26 * PLANE;
-#endif                     
-
- 
+#endif

@@ -19,6 +19,7 @@ detect_sm() {
     fi
     echo "${cc}"
 }
+
 GPU_ARCH="$(detect_sm)"; GPU_ARCH="${GPU_ARCH:-86}"
 
 runPipeline() {
@@ -71,7 +72,6 @@ runPipeline() {
     fi
     if [ ! -f "$EXECUTABLE" ]; then
         echo -e "${RED}Error: Executable not found: ${CYAN}${MODEL_DIR}/${EXECUTABLE_BASENAME}[.exe]${RESET}"
-        echo -e "${YELLOW}Tip:${RESET} confirm that compile.sh uses _sm${GPU_ARCH}."
         exit 1
     fi
 
@@ -82,13 +82,6 @@ runPipeline() {
         echo -e "${RED}Error running the simulator${RESET}"
         exit 1
     }
-
-    echo -e "${YELLOW}Entering ${CYAN}${BASE_DIR}/post${RESET}"
-    cd "${BASE_DIR}/post" || { echo -e "${RED}Error: Directory ${CYAN}${BASE_DIR}/post${RED} not found!${RESET}"; exit 1; }
-
-    echo -e "${BLUE}Executing: ${CYAN}./post.sh ${VELOCITY_SET} ${ID}${RESET}"
-    ./post.sh "${VELOCITY_SET}" "${ID}" \
-        || { echo -e "${RED}Error executing post.sh${RESET}"; exit 1; }
 
     echo -e "${GREEN}Process completed successfully!${RESET}"
 }

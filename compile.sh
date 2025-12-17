@@ -2,13 +2,15 @@
 set -euo pipefail
 
 GPU_INDEX=${GPU_INDEX:-0}
+
 if [ -n "${GPU_ARCH:-}" ]; then
     CC="${GPU_ARCH}"
 else
     if command -v nvidia-smi >/dev/null 2>&1; then
-        CC=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader -i "${GPU_INDEX}" 2>/dev/null | head -n1 | tr -d '.')
+        CC=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader -i "${GPU_INDEX}" 2>/dev/null \
+             | head -n1 | tr -d '.')
     fi
-    CC=${CC:-86} 
+    CC=${CC:-86}
 fi
 
 VELOCITY_SET=${1:-}
@@ -22,6 +24,13 @@ fi
 
 if [ "$VELOCITY_SET" != "D3Q19" ] && [ "$VELOCITY_SET" != "D3Q27" ]; then
     echo "Invalid VELOCITY_SET. Use 'D3Q19' or 'D3Q27'."
+    exit 1
+fi
+
+VS_MACRO="VS_${VELOCITY_SET}"
+
+if ! command -v nvcc >/dev/null 2>&1; then
+    echo "Error: nvcc not found in PATH."
     exit 1
 fi
 
@@ -43,19 +52,25 @@ EXECUTABLE="${OUTPUT_DIR}/${ID}sim_${VELOCITY_SET}_sm${CC}"
 
 mkdir -p "${OUTPUT_DIR}"
 
-echo "Project root detected: ${BASE_DIR}" 
+echo "Project root detected: ${BASE_DIR}"
+echo "Velocity set: ${VELOCITY_SET}"
 echo "Compiling to ${EXECUTABLE}..."
 
 nvcc -O3 --restrict \
      -gencode arch=compute_${CC},code=sm_${CC} \
-     -gencode arch=compute_${CC},code=compute_${CC} \
-     -rdc=true --ptxas-options=-v \
-     --use_fast_math --fmad=true \
+     -gencode arch=compute_${CC},code=lto_${CC} \
+     -rdc=true \
+     --ptxas-options=-v \
+     --extra-device-vectorization \
+     --fmad=true \
+     --extended-lambda \
      -I"${SRC_DIR}" \
      -std=c++20 "${SRC_DIR}/main.cu" \
-     -D${VELOCITY_SET} \
+     -D${VS_MACRO} \
      -DENABLE_FP16=1 \
-     --extended-lambda \
+     -DBENCHMARK=0 \
+     -DTIME_AVERAGE=0 \
+     -DREYNOLDS_MOMENTS=0 \
      -o "${EXECUTABLE}"
 
 echo "Compilation completed successfully: ${EXECUTABLE}"
