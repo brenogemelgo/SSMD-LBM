@@ -53,7 +53,6 @@ EXECUTABLE="${OUTPUT_DIR}/${ID}sim_${VELOCITY_SET}_sm${CC}"
 mkdir -p "${OUTPUT_DIR}"
 
 echo "Project root detected: ${BASE_DIR}"
-echo "Velocity set: ${VELOCITY_SET}"
 echo "Compiling to ${EXECUTABLE}..."
 
 nvcc -O3 --restrict \

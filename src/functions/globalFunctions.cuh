@@ -116,7 +116,7 @@ namespace geometry
 
     __host__ __device__ [[nodiscard]] static inline consteval scalar_t z_pos() noexcept
     {
-        return static_cast<scalar_t>(0.8) * center_z();
+        return static_cast<scalar_t>(0.7) * center_z();
     }
 }
 

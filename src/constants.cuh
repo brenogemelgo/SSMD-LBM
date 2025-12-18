@@ -45,7 +45,6 @@ SourceFiles
 #include "structs/LBMFields.cuh"
 #include "functions/constexprFor.cuh"
 #include "velocitySet/velocitySet.cuh"
-#include "flowCase/flowCase.cuh"
 
 namespace LBM
 {
@@ -68,7 +67,7 @@ namespace Phase
 #if defined(RUN_MODE)
 
 static constexpr int MACRO_SAVE = 1000;
-static constexpr int NSTEPS = 300000;
+static constexpr int NSTEPS = 100000;
 
 #elif defined(SAMPLE_MODE)
 
@@ -105,7 +104,7 @@ namespace physics
     static constexpr int reynolds_oil = 450;
 
     static constexpr int weber = 500;
-    static constexpr scalar_t sigma = (u_ref * u_ref * mesh::diam) / weber;
+    static constexpr scalar_t sigma = (u_oil * u_oil * mesh::diam_oil) / weber;
 
     static constexpr scalar_t width = static_cast<scalar_t>(1);
     static constexpr scalar_t gamma = static_cast<scalar_t>(static_cast<double>(1) / static_cast<double>(width));

@@ -221,24 +221,24 @@ namespace LBM
             });
     }
 
-    __global__ void callInflowZ(LBMFields d)
+    __global__ void callWaterInflow(LBMFields d)
     {
-        BoundaryConditions::applyInflowZ(d, t);
+        BoundaryConditions::applyWaterInflow(d);
     }
 
-    __global__ void callInflowY(LBMFields d)
+    __global__ void callOilInflow(LBMFields d)
     {
-        BoundaryConditions::applyInflowY(d, t);
-    }
-
-    __global__ void callOutflowZ(LBMFields d)
-    {
-        BoundaryConditions::applyOutflowZ(d);
+        BoundaryConditions::applyOilInflow(d);
     }
 
     __global__ void callOutflowY(LBMFields d)
     {
         BoundaryConditions::applyOutflowY(d);
+    }
+
+    __global__ void callOutflowZ(LBMFields d)
+    {
+        BoundaryConditions::applyOutflowZ(d);
     }
 }
 

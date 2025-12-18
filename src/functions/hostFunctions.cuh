@@ -47,13 +47,12 @@ SourceFiles
 namespace host
 {
     __host__ [[nodiscard]] static inline std::string createSimulationDirectory(
-        const std::string &FLOW_CASE,
         const std::string &VELOCITY_SET,
         const std::string &SIM_ID)
     {
         std::filesystem::path BASE_DIR = std::filesystem::current_path();
 
-        std::filesystem::path SIM_DIR = BASE_DIR / "bin" / FLOW_CASE / VELOCITY_SET / SIM_ID;
+        std::filesystem::path SIM_DIR = BASE_DIR / "bin" / VELOCITY_SET / SIM_ID;
 
         std::error_code EC;
         std::filesystem::create_directories(SIM_DIR, EC);
@@ -81,11 +80,14 @@ namespace host
             file << "---------------------------- SIMULATION METADATA ----------------------------\n"
                  << "ID:                 " << SIM_ID << '\n'
                  << "Velocity set:       " << VELOCITY_SET << '\n'
-                 << "Reference velocity: " << physics::u_ref << '\n'
-                 << "Reynolds number:    " << physics::reynolds << '\n'
+                 << "Water velocity: " << physics::u_water << '\n'
+                 << "Oil velocity: " << physics::u_oil << '\n'
+                 << "Water Reynolds:    " << physics::reynolds_water << '\n'
+                 << "Oil Reynolds:    " << physics::reynolds_oil << '\n'
                  << "Weber number:       " << physics::weber << "\n\n"
                  << "Domain size:        NX=" << mesh::nx << ", NY=" << mesh::ny << ", NZ=" << mesh::nz << '\n'
-                 << "Diameter:           D=" << mesh::diam << '\n'
+                 << "Water diameter:     D=" << mesh::diam_water << '\n'
+                 << "Oil diameter:       D=" << mesh::diam_oil << '\n'
                  << "Timesteps:          " << NSTEPS << '\n'
                  << "Output interval:    " << MACRO_SAVE << "\n\n"
                  << "-----------------------------------------------------------------------------\n";
@@ -102,22 +104,19 @@ namespace host
 
     __host__ [[gnu::cold]] static inline void printDiagnostics(const std::string &VELOCITY_SET) noexcept
     {
-        const double nu = static_cast<double>(physics::u_ref) * static_cast<double>(mesh::diam) / static_cast<double>(physics::reynolds);
-        const double Ma = static_cast<double>(physics::u_ref) * static_cast<double>(LBM::VelocitySet::as2());
-        const double tau = static_cast<double>(0.5) + static_cast<double>(nu) * static_cast<double>(LBM::VelocitySet::as2());
-
         std::cout << "\n---------------------------- SIMULATION METADATA ----------------------------\n"
                   << "Velocity set:       " << VELOCITY_SET << '\n'
-                  << "Reference velocity: " << physics::u_ref << '\n'
-                  << "Reynolds number:    " << physics::reynolds << '\n'
+                  << "Water velocity:     " << physics::u_water << '\n'
+                  << "Oil velocity:       " << physics::u_oil << '\n'
+                  << "Water Reynolds:     " << physics::reynolds_water << '\n'
+                  << "Oil Reynolds:       " << physics::reynolds_oil << '\n'
                   << "Weber number:       " << physics::weber << '\n'
                   << "NX:                 " << mesh::nx << '\n'
                   << "NY:                 " << mesh::ny << '\n'
                   << "NZ:                 " << mesh::nz << '\n'
-                  << "Diameter:           " << mesh::diam << '\n'
+                  << "Water diameter:     " << mesh::diam_water << '\n'
+                  << "Oil diameter:       " << mesh::diam_oil << '\n'
                   << "Cells:              " << size::cells() << '\n'
-                  << "Mach:               " << Ma << '\n'
-                  << "Tau:                " << tau << '\n'
                   << "-----------------------------------------------------------------------------\n\n";
     }
 

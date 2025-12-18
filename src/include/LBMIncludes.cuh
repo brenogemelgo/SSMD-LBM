@@ -48,7 +48,6 @@ namespace LBM
     __global__ void setFields(LBMFields d);
     __global__ void setOilJet(LBMFields d);
     __global__ void setWaterJet(LBMFields d);
-    __global__ void setDroplet(LBMFields d);
     __global__ void setDistros(LBMFields d);
 
     // Moments and core routines
@@ -56,10 +55,10 @@ namespace LBM
     __global__ void streamCollide(LBMFields d);
 
     // Boundary conditions
-    __global__ void callInflowZ(LBMFields d);
-    __global__ void callInflowY(LBMFields d);
-    __global__ void callOutflowZ(LBMFields d);
+    __global__ void callWaterInflow(LBMFields d);
+    __global__ void callOilInflow(LBMFields d);
     __global__ void callOutflowY(LBMFields d);
+    __global__ void callOutflowZ(LBMFields d);
 }
 
 #endif

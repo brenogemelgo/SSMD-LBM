@@ -50,17 +50,16 @@ SourceFiles
 
 int main(int argc, char *argv[])
 {
-    if (argc < 4)
+    if (argc < 3)
     {
-        std::cerr << "Error: Usage: " << argv[0] << " <flow case> <velocity set> <ID>\n";
+        std::cerr << "Error: Usage: " << argv[0] << " <velocity set> <ID>\n";
 
         return 1;
     }
 
-    const std::string FLOW_CASE = argv[1];
-    const std::string VELOCITY_SET = argv[2];
-    const std::string SIM_ID = argv[3];
-    const std::string SIM_DIR = host::createSimulationDirectory(FLOW_CASE, VELOCITY_SET, SIM_ID);
+    const std::string VELOCITY_SET = argv[1];
+    const std::string SIM_ID = argv[2];
+    const std::string SIM_DIR = host::createSimulationDirectory(VELOCITY_SET, SIM_ID);
 
     // Get device from pipeline argument
     if (host::setDeviceFromEnv() < 0)
@@ -76,6 +75,9 @@ int main(int argc, char *argv[])
     constexpr dim3 grid3D(host::divUp(mesh::nx, block3D.x),
                           host::divUp(mesh::ny, block3D.y),
                           host::divUp(mesh::nz, block3D.z));
+
+    constexpr dim3 blockY(block::nx, block::nz, 1u);
+    constexpr dim3 gridY(host::divUp(mesh::nx, blockY.x), host::divUp(mesh::nz, blockY.y), 1u);
 
     constexpr dim3 blockZ(block::nx, block::ny, 1u);
     constexpr dim3 gridZ(host::divUp(mesh::nx, blockZ.x), host::divUp(mesh::ny, blockZ.y), 1u);
@@ -107,10 +109,10 @@ int main(int argc, char *argv[])
     vtk_threads.reserve(NSTEPS / MACRO_SAVE + 2);
 
     // Base fields (always saved)
-    constexpr std::array<host::FieldConfig, 1> BASE_FIELDS{{
-        // {host::FieldID::Rho, "rho", host::FieldDumpShape::Grid3D, true},
+    constexpr std::array<host::FieldConfig, 3> BASE_FIELDS{{
+        {host::FieldID::Rho, "rho", host::FieldDumpShape::Grid3D, true},
         {host::FieldID::Phi, "phi", host::FieldDumpShape::Grid3D, true},
-        // {host::FieldID::Uz, "uz", host::FieldDumpShape::Grid3D, true},
+        {host::FieldID::Uz, "uz", host::FieldDumpShape::Grid3D, true},
     }};
 
     // Derived fields from modules (possibly empty)
@@ -147,8 +149,11 @@ int main(int argc, char *argv[])
         // Launch captured sequence
         cudaGraphLaunch(graphExec, queue);
 
-        // Flow case specific boundary conditions
-        LBM::FlowCase::boundaryConditions<gridZ, blockZ, dynamic>(fields, queue, STEP);
+        // Inflow/outflow
+        LBM::callWaterInflow<<<gridY, blockY, dynamic, queue>>>(fields);
+        LBM::callOilInflow<<<gridZ, blockZ, dynamic, queue>>>(fields);
+        LBM::callOutflowY<<<gridY, blockY, dynamic, queue>>>(fields);
+        LBM::callOutflowZ<<<gridZ, blockZ, dynamic, queue>>>(fields);
 
         // Derived fields
 #if TIME_AVERAGE || REYNOLDS_MOMENTS
