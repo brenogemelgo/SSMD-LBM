@@ -253,7 +253,7 @@ namespace relaxation
         return static_cast<scalar_t>((static_cast<double>(physics::u_water) * static_cast<double>(mesh::diam_water)) / static_cast<double>(physics::reynolds_water));
     }
 
-    __host__ __device__ [[nodiscard]] static inline consteval scalar_t visc_one() noexcept
+    __host__ __device__ [[nodiscard]] static inline consteval scalar_t visc_oil() noexcept
     {
         return static_cast<scalar_t>((static_cast<double>(physics::u_oil) * static_cast<double>(mesh::diam_oil)) / static_cast<double>(physics::reynolds_oil));
     }
@@ -268,11 +268,6 @@ namespace relaxation
         return static_cast<scalar_t>(0.5) + static_cast<scalar_t>(LBM::VelocitySet::as2()) * nu;
     }
 
-    __host__ __device__ [[nodiscard]] static inline consteval scalar_t omega_ref() noexcept
-    {
-        return omega_zero();
-    }
-
     __host__ __device__ [[nodiscard]] static inline consteval scalar_t omega_water() noexcept
     {
         return omega_from_nu(visc_water());
@@ -281,6 +276,11 @@ namespace relaxation
     __host__ __device__ [[nodiscard]] static inline consteval scalar_t omega_oil() noexcept
     {
         return omega_from_nu(visc_oil());
+    }
+
+    __host__ __device__ [[nodiscard]] static inline consteval scalar_t omega_ref() noexcept
+    {
+        return omega_water();
     }
 
     __host__ __device__ [[nodiscard]] static inline consteval scalar_t omco_ref() noexcept
