@@ -46,23 +46,6 @@ SourceFiles
 
 namespace LBM
 {
-    __global__ void setFields(LBMFields d)
-    {
-        const label_t x = threadIdx.x + blockIdx.x * blockDim.x;
-        const label_t y = threadIdx.y + blockIdx.y * blockDim.y;
-        const label_t z = threadIdx.z + blockIdx.z * blockDim.z;
-
-        if (x >= mesh::nx || y >= mesh::ny || z >= mesh::nz)
-        {
-            return;
-        }
-
-        const label_t idx3 = device::global3(x, y, z);
-
-        // Non-zero fields
-        d.rho[idx3] = static_cast<scalar_t>(1);
-    }
-
     __global__ void setWaterJet(LBMFields d)
     {
         const label_t x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -113,6 +96,24 @@ namespace LBM
         d.uz[idx3_in] = physics::u_oil;
     }
 
+    __global__ void setInitialDensity(LBMFields d)
+    {
+        const label_t x = threadIdx.x + blockIdx.x * blockDim.x;
+        const label_t y = threadIdx.y + blockIdx.y * blockDim.y;
+        const label_t z = threadIdx.z + blockIdx.z * blockDim.z;
+
+        if (x >= mesh::nx || y >= mesh::ny || z >= mesh::nz)
+        {
+            return;
+        }
+
+        const label_t idx3 = device::global3(x, y, z);
+
+        const scalar_t phi = d.phi[idx3];
+
+        d.rho[idx3] = (static_cast<scalar_t>(1) - phi) * physics::rho_water + phi * physics::rho_oil;
+    }
+
     __global__ void setDistros(LBMFields d)
     {
         const label_t x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -140,7 +141,7 @@ namespace LBM
 
                 const scalar_t cu = VelocitySet::as2() * (cx * ux + cy * uy + cz * uz);
 
-                const scalar_t feq = VelocitySet::f_eq<Q>(d.rho[idx3], uu, cu);
+                const scalar_t feq = VelocitySet::f_eq<Q>(d.p[idx3], uu, cu);
 
                 d.f[Q * size::cells() + idx3] = to_pop(feq);
             });

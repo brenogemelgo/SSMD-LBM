@@ -71,13 +71,13 @@ namespace LBM
             const label_t idx3_bnd = device::global3(x, 0, z);
             const label_t idx3_yp1 = device::global3(x, 1, z);
 
-            const scalar_t rho = static_cast<scalar_t>(1);
+            const scalar_t p = static_cast<scalar_t>(0);
             const scalar_t phi = static_cast<scalar_t>(0);
             const scalar_t ux = static_cast<scalar_t>(0);
             const scalar_t uy = physics::u_water;
             const scalar_t uz = static_cast<scalar_t>(0);
 
-            d.rho[idx3_bnd] = rho;
+            d.p[idx3_bnd] = p;
             d.phi[idx3_bnd] = phi;
             d.ux[idx3_bnd] = ux;
             d.uy[idx3_bnd] = uy;
@@ -102,7 +102,7 @@ namespace LBM
 
                         const scalar_t cu = VelocitySet::as2() * (cx * ux + cy * uy + cz * uz);
 
-                        const scalar_t feq = VelocitySet::f_eq<Q>(d.rho[fluidNode], uu, cu);
+                        const scalar_t feq = VelocitySet::f_eq<Q>(p, uu, cu);
                         const scalar_t fneq = VelocitySet::f_neq<Q>(d.pxx[fluidNode], d.pyy[fluidNode], d.pzz[fluidNode],
                                                                     d.pxy[fluidNode], d.pxz[fluidNode], d.pyz[fluidNode],
                                                                     d.ux[fluidNode], d.uy[fluidNode], d.uz[fluidNode]);
@@ -136,13 +136,13 @@ namespace LBM
             const label_t idx3_bnd = device::global3(x, y, 0);
             const label_t idx3_zp1 = device::global3(x, y, 1);
 
-            const scalar_t rho = static_cast<scalar_t>(1);
+            const scalar_t p = static_cast<scalar_t>(0);
             const scalar_t phi = static_cast<scalar_t>(1);
             const scalar_t ux = static_cast<scalar_t>(0);
             const scalar_t uy = static_cast<scalar_t>(0);
             const scalar_t uz = physics::u_oil;
 
-            d.rho[idx3_bnd] = rho;
+            d.p[idx3_bnd] = p;
             d.phi[idx3_bnd] = phi;
             d.ux[idx3_bnd] = ux;
             d.uy[idx3_bnd] = uy;
@@ -167,7 +167,7 @@ namespace LBM
 
                         const scalar_t cu = VelocitySet::as2() * (cx * ux + cy * uy + cz * uz);
 
-                        const scalar_t feq = VelocitySet::f_eq<Q>(rho, uu, cu);
+                        const scalar_t feq = VelocitySet::f_eq<Q>(p, uu, cu);
                         const scalar_t fneq = VelocitySet::f_neq<Q>(d.pxx[fluidNode], d.pyy[fluidNode], d.pzz[fluidNode],
                                                                     d.pxy[fluidNode], d.pxz[fluidNode], d.pyz[fluidNode],
                                                                     d.ux[fluidNode], d.uy[fluidNode], d.uz[fluidNode]);
@@ -192,13 +192,13 @@ namespace LBM
             const label_t idx3_bnd = device::global3(x, mesh::ny - 1, z);
             const label_t idx3_ym1 = device::global3(x, mesh::ny - 2, z);
 
-            d.rho[idx3_bnd] = d.rho[idx3_ym1];
+            d.p[idx3_bnd] = d.p[idx3_ym1];
             d.phi[idx3_bnd] = d.phi[idx3_ym1];
             d.ux[idx3_bnd] = d.ux[idx3_ym1];
             d.uy[idx3_bnd] = d.uy[idx3_ym1];
             d.uz[idx3_bnd] = d.uz[idx3_ym1];
 
-            const scalar_t rho = d.rho[idx3_bnd];
+            const scalar_t p = d.p[idx3_bnd];
             const scalar_t phi = d.phi[idx3_bnd];
             const scalar_t ux = d.ux[idx3_bnd];
             const scalar_t uy = d.uy[idx3_bnd];
@@ -223,7 +223,7 @@ namespace LBM
 
                         const scalar_t cu = VelocitySet::as2() * (cx * ux + cy * uy + cz * uz);
 
-                        const scalar_t feq = VelocitySet::f_eq<Q>(rho, uu, cu);
+                        const scalar_t feq = VelocitySet::f_eq<Q>(p, uu, cu);
                         const scalar_t fneq = VelocitySet::f_neq<Q>(d.pxx[fluidNode], d.pyy[fluidNode], d.pzz[fluidNode],
                                                                     d.pxy[fluidNode], d.pxz[fluidNode], d.pyz[fluidNode],
                                                                     d.ux[fluidNode], d.uy[fluidNode], d.uz[fluidNode]);
@@ -248,13 +248,13 @@ namespace LBM
             const label_t idx3_bnd = device::global3(x, y, mesh::nz - 1);
             const label_t idx3_zm1 = device::global3(x, y, mesh::nz - 2);
 
-            d.rho[idx3_bnd] = d.rho[idx3_zm1];
+            d.p[idx3_bnd] = d.p[idx3_zm1];
             d.phi[idx3_bnd] = d.phi[idx3_zm1];
             d.ux[idx3_bnd] = d.ux[idx3_zm1];
             d.uy[idx3_bnd] = d.uy[idx3_zm1];
             d.uz[idx3_bnd] = d.uz[idx3_zm1];
 
-            const scalar_t rho = d.rho[idx3_bnd];
+            const scalar_t p = d.p[idx3_bnd];
             const scalar_t phi = d.phi[idx3_bnd];
             const scalar_t ux = d.ux[idx3_bnd];
             const scalar_t uy = d.uy[idx3_bnd];
@@ -279,7 +279,7 @@ namespace LBM
 
                         const scalar_t cu = VelocitySet::as2() * (cx * ux + cy * uy + cz * uz);
 
-                        const scalar_t feq = VelocitySet::f_eq<Q>(rho, uu, cu);
+                        const scalar_t feq = VelocitySet::f_eq<Q>(p, uu, cu);
                         const scalar_t fneq = VelocitySet::f_neq<Q>(d.pxx[fluidNode], d.pyy[fluidNode], d.pzz[fluidNode],
                                                                     d.pxy[fluidNode], d.pxz[fluidNode], d.pyz[fluidNode],
                                                                     d.ux[fluidNode], d.uy[fluidNode], d.uz[fluidNode]);

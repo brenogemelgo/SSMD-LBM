@@ -103,8 +103,11 @@ namespace physics
     static constexpr int reynolds_water = 1400;
     static constexpr int reynolds_oil = 450;
 
+    static constexpr scalar_t rho_water = static_cast<scalar_t>(1);
+    static constexpr scalar_t rho_oil = static_cast<scalar_t>(0.82);
+
     static constexpr int weber = 500;
-    static constexpr scalar_t sigma = (u_oil * u_oil * mesh::diam_oil) / weber;
+    static constexpr scalar_t sigma = rho_oil * (u_oil * u_oil * mesh::diam_oil) / weber;
 
     static constexpr scalar_t width = static_cast<scalar_t>(1);
     static constexpr scalar_t gamma = static_cast<scalar_t>(static_cast<double>(1) / static_cast<double>(width));

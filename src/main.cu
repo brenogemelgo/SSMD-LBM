@@ -90,9 +90,9 @@ int main(int argc, char *argv[])
     checkCudaErrorsOutline(cudaStreamCreate(&queue));
 
     // Initial conditions
-    LBM::setFields<<<grid3D, block3D, dynamic, queue>>>(fields);
     LBM::setOilJet<<<grid3D, block3D, dynamic, queue>>>(fields);
     LBM::setWaterJet<<<grid3D, block3D, dynamic, queue>>>(fields);
+    LBM::setInitialDensity<<<grid3D, block3D, dynamic, queue>>>(fields);
     LBM::setDistros<<<grid3D, block3D, dynamic, queue>>>(fields);
 
     // Make sure everything is initialized
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
     // Base fields (always saved)
     constexpr std::array<host::FieldConfig, 3> BASE_FIELDS{{
-        {host::FieldID::Rho, "rho", host::FieldDumpShape::Grid3D, true},
+        {host::FieldID::P, "p", host::FieldDumpShape::Grid3D, true},
         {host::FieldID::Phi, "phi", host::FieldDumpShape::Grid3D, true},
         {host::FieldID::Uz, "uz", host::FieldDumpShape::Grid3D, true},
     }};
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
         LBM::callOutflowZ<<<gridZ, blockZ, dynamic, queue>>>(fields);
 
         // Derived fields
-#if TIME_AVERAGE || REYNOLDS_MOMENTS
+#if TIME_AVERAGE || REYNOLDS_MOMENTS || VORTICITY_FIELDS
         Derived::launchAllDerived<grid3D, block3D, dynamic>(queue, fields, STEP);
 #endif
 
@@ -212,6 +212,7 @@ int main(int argc, char *argv[])
     // Free device memory
     cudaFree(fields.f);
     cudaFree(fields.g);
+    cudaFree(fields.p);
     cudaFree(fields.rho);
     cudaFree(fields.ux);
     cudaFree(fields.uy);
